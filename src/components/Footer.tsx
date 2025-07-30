@@ -1,5 +1,6 @@
 // File: src/components/Footer.tsx
 import Link from "next/link";
+import Image from "next/image";
 import { FC } from "react";
 
 const Footer: FC = () => {
@@ -11,9 +12,11 @@ const Footer: FC = () => {
           {/* Brand Section */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
-              <img
+              <Image
                 src="/fasting-clock-logo.svg"
                 alt="Fasting Clock Logo"
+                width={32}
+                height={16}
                 className="w-8 h-4"
               />
               <h3 className="text-xl font-bold text-white">FastingClock.com</h3>

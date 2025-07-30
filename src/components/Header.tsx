@@ -1,5 +1,6 @@
 // File: src/components/Header.tsx
 import Link from "next/link";
+import Image from "next/image";
 import { FC } from "react";
 
 const Header: FC = () => {
@@ -11,9 +12,12 @@ const Header: FC = () => {
           <Link href="/" className="inline-block group">
             {/* Large centered logo */}
             <div className="flex flex-col items-center gap-4">
-              <img
+              <Image
                 src="/fasting-clock-logo.svg"
                 alt="Fasting Clock Logo"
+                width={224}
+                height={112}
+                priority={true}
                 className="w-32 h-16 sm:w-40 sm:h-20 md:w-48 md:h-24 lg:w-56 lg:h-28 transition-transform group-hover:scale-105"
               />
               <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white group-hover:text-yellow-400 transition-colors">

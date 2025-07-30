@@ -1,5 +1,6 @@
 "use client";
 import { FC, useState, useEffect, useRef } from "react";
+import { trackTimerStart, trackTimerComplete, trackMethodSelection } from "@/lib/gtag";
 
 const methods = [
   { key: "16:8", label: "16:8", desc: "16h fast, 8h eating", hours: 16 },
@@ -42,6 +43,13 @@ const TimerForm: FC = () => {
           setTimeRemaining(0);
           setIsCountdownActive(false);
           setResult("🎉 Your fast has ended! You can break your fast now.");
+          
+          // Track timer completion event
+          const selectedMethod = methods.find(m => m.key === method);
+          if (selectedMethod) {
+            trackTimerComplete(selectedMethod.key, selectedMethod.hours);
+          }
+          
           if (intervalRef.current) {
             clearInterval(intervalRef.current);
           }
@@ -56,7 +64,7 @@ const TimerForm: FC = () => {
         }
       };
     }
-  }, [isCountdownActive, fastEndTime]);
+  }, [isCountdownActive, fastEndTime, method]);
 
   const formatTime = (milliseconds: number): string => {
     if (milliseconds <= 0) return "0h 0m 0s";
@@ -115,6 +123,9 @@ const TimerForm: FC = () => {
         setTimeRemaining(remaining);
         setIsCountdownActive(true);
         setResult(`Your ${selectedMethod.label} fast will end at ${endTime.toLocaleString()}`);
+        
+        // Track timer start event
+        trackTimerStart(selectedMethod.key, selectedMethod.hours);
       } else {
         // Fast is already complete
         const timeComplete = Math.abs(remaining);
@@ -124,6 +135,9 @@ const TimerForm: FC = () => {
         setResult(`🎉 Your ${selectedMethod.label} fast completed ${hoursComplete}h ${minutesComplete}m ago! You can break your fast now.`);
         setTimeRemaining(0);
         setIsCountdownActive(false);
+        
+        // Track timer completion event
+        trackTimerComplete(selectedMethod.key, selectedMethod.hours);
       }
 
     } catch (err) {
@@ -182,7 +196,10 @@ const TimerForm: FC = () => {
         {methods.map(m => (
           <button 
             key={m.key} 
-            onClick={() => setMethod(m.key)} 
+            onClick={() => {
+              setMethod(m.key);
+              trackMethodSelection(m.key);
+            }} 
             className={`${
               method === m.key 
                 ? "bg-yellow-400 text-black" 

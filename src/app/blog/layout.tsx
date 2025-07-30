@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export const metadata = {
   title: "Free Fasting Timer Tips | FastingClock.com",
@@ -51,9 +52,11 @@ export default function BlogLayout({ children }: BlogLayoutProps) {
           <nav className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-3 text-blue-400 hover:text-blue-300 transition-colors group">
               <div className="relative">
-                <img
+                <Image
                   src="/fasting-clock-logo.svg"
                   alt="Fasting Clock Logo"
+                  width={80}
+                  height={40}
                   className="w-16 h-8 sm:w-20 sm:h-10 transition-transform group-hover:scale-105"
                 />
               </div>

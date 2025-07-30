@@ -1,7 +1,7 @@
 import { getAllPosts } from '@/lib/blog';
 
 export default function sitemap() {
-  const baseUrl = 'https://fastingclock.com';
+  const baseUrl = 'https://www.fastingclock.com';
   const currentDate = new Date().toISOString();
   
   // Get all blog posts

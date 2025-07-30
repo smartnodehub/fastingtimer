@@ -1,11 +1,10 @@
 // File: src/app/page.tsx
 import Link from "next/link";
+import { Suspense, lazy } from "react";
 import Header        from "@/components/Header";
 import IntroSection  from "@/components/IntroSection";
 import TimerForm     from "@/components/TimerForm";
 import ResourceLinks from "@/components/ResourceLinks";
-import BenefitList   from "@/components/BenefitList";
-import FAQ           from "@/components/FAQ";
 import StructuredData from "@/components/StructuredData";
 import { content }   from "@/content/content.en";
 import { 
@@ -14,6 +13,10 @@ import {
   generateOrganizationSchema,
   generateFAQSchema 
 } from "@/lib/structured-data";
+
+// Lazy load below-the-fold components
+const BenefitList = lazy(() => import("@/components/BenefitList"));
+const FAQ = lazy(() => import("@/components/FAQ"));
 
 export const metadata = {
   title:       "Free Fasting Timer & Clock | FastingClock.com",
@@ -88,8 +91,12 @@ export default function HomePage() {
         </section>
         
         <IntroSection text={content.intro16to8} />
-        <BenefitList items={content.benefits} />
-        <FAQ items={content.faqItems} />
+        <Suspense fallback={<div className="py-8 text-center text-gray-400">Loading benefits...</div>}>
+          <BenefitList items={content.benefits} />
+        </Suspense>
+        <Suspense fallback={<div className="py-8 text-center text-gray-400">Loading FAQ...</div>}>
+          <FAQ items={content.faqItems} />
+        </Suspense>
       </main>
     </>
   );

@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Footer from "@/components/Footer";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
+import WebVitalsReporter from "@/components/WebVitalsReporter";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import ErrorReporter from "@/components/ErrorReporter";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -54,6 +58,12 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -62,6 +72,26 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Preload critical assets for LCP */}
+        <link 
+          rel="preload" 
+          href="/fasting-clock-logo.svg" 
+          as="image" 
+          type="image/svg+xml"
+        />
+        <link 
+          rel="preload" 
+          href="https://fastingclock.com/fastingclock-logo-adsense-5to1.png" 
+          as="image" 
+          type="image/png"
+        />
+        {/* Preload critical fonts */}
+        <link 
+          rel="preload" 
+          href="/_next/static/css/app/globals.css"
+          as="style"
+        />
+        {/* AdSense */}
         <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7058115116105378"
@@ -71,8 +101,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
-        <Footer />
+        <ErrorBoundary>
+          <GoogleAnalytics />
+          <WebVitalsReporter />
+          <ErrorReporter />
+          {children}
+          <Footer />
+        </ErrorBoundary>
       </body>
     </html>
   );

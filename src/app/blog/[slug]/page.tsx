@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getAllPosts, getPostBySlug } from "@/lib/blog";
 import StructuredData from "@/components/StructuredData";
+import BlogPostTracker from "@/components/BlogPostTracker";
 import { generateBreadcrumbSchema, generateArticleSchema } from "@/lib/structured-data";
 
 interface BlogPostPageProps {
@@ -117,6 +118,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   return (
     <>
       <StructuredData data={[breadcrumbSchema, articleSchema]} />
+      <BlogPostTracker slug={slug} readTime={post.readTime} />
       <article className="max-w-3xl mx-auto">
       {/* Post Header */}
       <header className="mb-8">

@@ -1,0 +1,233 @@
+name: Lighthouse CI
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  lighthouse-ci:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Deploy to Vercel Preview
+        uses: amondnet/vercel-action@v25
+        id: vercel-deploy
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          working-directory: ./
+
+      - name: Wait for deployment
+        run: |
+          echo "Waiting for deployment to be ready..."
+          echo "Preview URL: ${{ steps.vercel-deploy.outputs.preview-url }}"
+          sleep 45
+          
+      - name: Verify deployment is accessible
+        run: |
+          max_attempts=5
+          attempt=1
+          while [ $attempt -le $max_attempts ]; do
+            echo "Attempt $attempt: Testing if site is accessible..."
+            if curl -f -s "${{ steps.vercel-deploy.outputs.preview-url }}" > /dev/null; then
+              echo "✅ Site is accessible"
+              break
+            else
+              echo "❌ Site not accessible yet, waiting..."
+              sleep 15
+              attempt=$((attempt + 1))
+            fi
+          done
+          
+          if [ $attempt -gt $max_attempts ]; then
+            echo "❌ Site not accessible after $max_attempts attempts"
+            exit 1
+          fi
+
+      - name: Run Lighthouse CI (Desktop)
+        uses: treosh/lighthouse-ci-action@v12
+        id: lighthouse-desktop
+        continue-on-error: true
+        with:
+          configPath: './lighthouserc.json'
+          temporaryPublicStorage: true
+          uploadArtifacts: true
+          urls: |
+            ${{ steps.vercel-deploy.outputs.preview-url }}
+            ${{ steps.vercel-deploy.outputs.preview-url }}/blog
+            ${{ steps.vercel-deploy.outputs.preview-url }}/privacy
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run Lighthouse CI (Mobile)
+        uses: treosh/lighthouse-ci-action@v12
+        id: lighthouse-mobile
+        continue-on-error: true
+        with:
+          configPath: './lighthouserc.mobile.json'
+          temporaryPublicStorage: true
+          uploadArtifacts: true
+          urls: |
+            ${{ steps.vercel-deploy.outputs.preview-url }}
+            ${{ steps.vercel-deploy.outputs.preview-url }}/blog
+            ${{ steps.vercel-deploy.outputs.preview-url }}/privacy
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment PR with Lighthouse results
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            let comment = `## 🚦 Lighthouse CI Results\n\n`;
+            comment += `**Preview URL:** ${{ steps.vercel-deploy.outputs.preview-url }}\n\n`;
+            
+            // Check if lighthouse results exist
+            const resultsPath = './.lighthouseci';
+            let foundResults = false;
+            
+            try {
+              if (fs.existsSync(resultsPath)) {
+                const files = fs.readdirSync(resultsPath);
+                console.log('Available files:', files);
+                
+                // Look for manifest or results files
+                const manifestFile = files.find(f => f.includes('manifest.json'));
+                const reportFiles = files.filter(f => f.endsWith('.json') && !f.includes('manifest'));
+                
+                if (manifestFile) {
+                  try {
+                    const manifest = JSON.parse(fs.readFileSync(path.join(resultsPath, manifestFile), 'utf8'));
+                    
+                    comment += `### 📊 Performance Summary\n\n`;
+                    comment += `| URL | Device | Performance | Accessibility | Best Practices | SEO |\n`;
+                    comment += `|-----|--------|-------------|---------------|----------------|-----|\n`;
+                    
+                    manifest.forEach(result => {
+                      const urlPath = result.url.replace('${{ steps.vercel-deploy.outputs.preview-url }}', '') || '/';
+                      const device = result.url.includes('mobile') ? 'Mobile' : 'Desktop';
+                      
+                      if (result.summary) {
+                        const perf = Math.round((result.summary.performance || 0) * 100);
+                        const a11y = Math.round((result.summary.accessibility || 0) * 100);
+                        const bp = Math.round((result.summary['best-practices'] || 0) * 100);
+                        const seo = Math.round((result.summary.seo || 0) * 100);
+                        
+                        const perfIcon = perf >= 90 ? '🟢' : perf >= 50 ? '🟡' : '🔴';
+                        const a11yIcon = a11y >= 90 ? '🟢' : a11y >= 50 ? '🟡' : '🔴';
+                        const bpIcon = bp >= 90 ? '🟢' : bp >= 50 ? '🟡' : '🔴';
+                        const seoIcon = seo >= 90 ? '🟢' : seo >= 50 ? '🟡' : '🔴';
+                        
+                        comment += `| ${urlPath} | ${device} | ${perfIcon} ${perf} | ${a11yIcon} ${a11y} | ${bpIcon} ${bp} | ${seoIcon} ${seo} |\n`;
+                        foundResults = true;
+                      }
+                    });
+                  } catch (parseError) {
+                    console.log('Error parsing manifest:', parseError);
+                  }
+                }
+                
+                if (reportFiles.length > 0 && !foundResults) {
+                  comment += `### 📊 Performance Summary\n\n`;
+                  comment += `Found ${reportFiles.length} lighthouse reports. Processing...\n\n`;
+                  
+                  // Try to parse individual report files
+                  reportFiles.slice(0, 6).forEach(file => {
+                    try {
+                      const reportContent = JSON.parse(fs.readFileSync(path.join(resultsPath, file), 'utf8'));
+                      if (reportContent.categories) {
+                        const url = reportContent.finalUrl || reportContent.requestedUrl || 'Unknown';
+                        const urlPath = url.replace('${{ steps.vercel-deploy.outputs.preview-url }}', '') || '/';
+                        
+                        const perf = Math.round((reportContent.categories.performance?.score || 0) * 100);
+                        const a11y = Math.round((reportContent.categories.accessibility?.score || 0) * 100);
+                        const bp = Math.round((reportContent.categories['best-practices']?.score || 0) * 100);
+                        const seo = Math.round((reportContent.categories.seo?.score || 0) * 100);
+                        
+                        const perfIcon = perf >= 90 ? '🟢' : perf >= 50 ? '🟡' : '🔴';
+                        const a11yIcon = a11y >= 90 ? '🟢' : a11y >= 50 ? '🟡' : '🔴';
+                        const bpIcon = bp >= 90 ? '🟢' : bp >= 50 ? '🟡' : '🔴';
+                        const seoIcon = seo >= 90 ? '🟢' : seo >= 50 ? '🟡' : '🔴';
+                        
+                        if (!foundResults) {
+                          comment += `| URL | Performance | Accessibility | Best Practices | SEO |\n`;
+                          comment += `|-----|-------------|---------------|----------------|-----|\n`;
+                          foundResults = true;
+                        }
+                        
+                        comment += `| ${urlPath} | ${perfIcon} ${perf} | ${a11yIcon} ${a11y} | ${bpIcon} ${bp} | ${seoIcon} ${seo} |\n`;
+                      }
+                    } catch (fileError) {
+                      console.log(`Error parsing ${file}:`, fileError);
+                    }
+                  });
+                }
+              }
+            } catch (error) {
+              console.log('Error reading lighthouse results:', error);
+            }
+            
+            if (!foundResults) {
+              comment += `### ⚠️ Results Processing\n\n`;
+              comment += `Lighthouse tests completed but detailed results are being processed.\n`;
+              comment += `Check the [workflow logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for detailed information.\n\n`;
+            }
+            
+            comment += `\n### 🎯 Performance Targets\n`;
+            comment += `- **Desktop:** Performance ≥80, LCP ≤2.5s, CLS ≤0.1\n`;
+            comment += `- **Mobile:** Performance ≥70, LCP ≤4.0s, CLS ≤0.1\n`;
+            comment += `- **Both:** Accessibility ≥90, SEO ≥90\n\n`;
+            
+            comment += `📊 [View detailed Lighthouse reports](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\n`;
+            
+            try {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            } catch (commentError) {
+              console.error('Error creating comment:', commentError);
+            }
+
+      - name: Check Lighthouse Results
+        run: |
+          echo "🔍 Checking Lighthouse test results..."
+          
+          desktop_result="${{ steps.lighthouse-desktop.outcome }}"
+          mobile_result="${{ steps.lighthouse-mobile.outcome }}"
+          
+          echo "Desktop result: $desktop_result"
+          echo "Mobile result: $mobile_result"
+          
+          if [ "$desktop_result" = "failure" ] || [ "$mobile_result" = "failure" ]; then
+            echo "❌ One or more Lighthouse tests failed to meet performance targets"
+            echo "📊 Check the detailed reports above for specific metrics that need improvement"
+            exit 1
+          else
+            echo "✅ All Lighthouse tests passed!"
+          fi

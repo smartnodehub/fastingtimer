@@ -1,0 +1,208 @@
+{
+  "timestamp": "2025-07-30T14:47:52.416Z",
+  "domain": "www.fastingclock.com",
+  "base_url": "https://www.fastingclock.com",
+  "checks": {
+    "essentialPages": [
+      {
+        "url": "https://www.fastingclock.com/",
+        "status": 200,
+        "success": true,
+        "headers": {
+          "accept-ranges": "bytes",
+          "access-control-allow-origin": "*",
+          "age": "6573",
+          "cache-control": "public, max-age=0, must-revalidate",
+          "content-disposition": "inline",
+          "content-length": "49623",
+          "content-type": "text/html; charset=utf-8",
+          "date": "Wed, 30 Jul 2025 14:47:51 GMT",
+          "etag": "\"10511d4d7e14dbf9737b75476cb8a07e\"",
+          "server": "Vercel",
+          "strict-transport-security": "max-age=63072000",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch",
+          "x-matched-path": "/",
+          "x-nextjs-prerender": "1",
+          "x-nextjs-stale-time": "300",
+          "x-vercel-cache": "HIT",
+          "x-vercel-id": "arn1::vdk5x-1753886871505-fa3b3e0a66dc"
+        }
+      },
+      {
+        "url": "https://www.fastingclock.com/blog",
+        "status": 200,
+        "success": true,
+        "headers": {
+          "accept-ranges": "bytes",
+          "access-control-allow-origin": "*",
+          "age": "1060",
+          "cache-control": "public, max-age=0, must-revalidate",
+          "content-disposition": "inline",
+          "content-length": "30585",
+          "content-type": "text/html; charset=utf-8",
+          "date": "Wed, 30 Jul 2025 14:47:51 GMT",
+          "etag": "\"4b5e6a314d22e44d88aa06d3175b462c\"",
+          "server": "Vercel",
+          "strict-transport-security": "max-age=63072000",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch",
+          "x-matched-path": "/blog",
+          "x-nextjs-prerender": "1",
+          "x-nextjs-stale-time": "300",
+          "x-vercel-cache": "HIT",
+          "x-vercel-id": "arn1::5vq5t-1753886871589-5ac9c731f03c"
+        }
+      },
+      {
+        "url": "https://www.fastingclock.com/blog/all",
+        "status": 200,
+        "success": true,
+        "headers": {
+          "accept-ranges": "bytes",
+          "access-control-allow-origin": "*",
+          "age": "1059",
+          "cache-control": "public, max-age=0, must-revalidate",
+          "content-disposition": "inline",
+          "content-length": "36236",
+          "content-type": "text/html; charset=utf-8",
+          "date": "Wed, 30 Jul 2025 14:47:51 GMT",
+          "etag": "\"888811f0fa1cedfdc1c5c456f07f7ec4\"",
+          "server": "Vercel",
+          "strict-transport-security": "max-age=63072000",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch",
+          "x-matched-path": "/blog/all",
+          "x-nextjs-prerender": "1",
+          "x-nextjs-stale-time": "300",
+          "x-vercel-cache": "HIT",
+          "x-vercel-id": "arn1::74kfb-1753886871701-d508c5f13141"
+        }
+      },
+      {
+        "url": "https://www.fastingclock.com/privacy",
+        "status": 200,
+        "success": true,
+        "headers": {
+          "accept-ranges": "bytes",
+          "access-control-allow-origin": "*",
+          "age": "1062",
+          "cache-control": "public, max-age=0, must-revalidate",
+          "content-disposition": "inline",
+          "content-length": "21560",
+          "content-type": "text/html; charset=utf-8",
+          "date": "Wed, 30 Jul 2025 14:47:51 GMT",
+          "etag": "\"77b855ef9afc5c5e1eaaa7c5e2366f02\"",
+          "server": "Vercel",
+          "strict-transport-security": "max-age=63072000",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch",
+          "x-matched-path": "/privacy",
+          "x-nextjs-prerender": "1",
+          "x-nextjs-stale-time": "300",
+          "x-vercel-cache": "HIT",
+          "x-vercel-id": "arn1::qgrvc-1753886871770-54067a1bc7c5"
+        }
+      },
+      {
+        "url": "https://www.fastingclock.com/contact",
+        "status": 200,
+        "success": true,
+        "headers": {
+          "accept-ranges": "bytes",
+          "access-control-allow-origin": "*",
+          "age": "1064",
+          "cache-control": "public, max-age=0, must-revalidate",
+          "content-disposition": "inline",
+          "content-length": "23961",
+          "content-type": "text/html; charset=utf-8",
+          "date": "Wed, 30 Jul 2025 14:47:51 GMT",
+          "etag": "\"76f2acbf093f92f2e8159b36ac759428\"",
+          "server": "Vercel",
+          "strict-transport-security": "max-age=63072000",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch",
+          "x-matched-path": "/contact",
+          "x-nextjs-prerender": "1",
+          "x-nextjs-stale-time": "300",
+          "x-vercel-cache": "HIT",
+          "x-vercel-id": "arn1::vdk5x-1753886871836-da0d3292ba16"
+        }
+      },
+      {
+        "url": "https://www.fastingclock.com/sitemap.xml",
+        "status": 200,
+        "success": true,
+        "headers": {
+          "accept-ranges": "bytes",
+          "access-control-allow-origin": "*",
+          "age": "2009",
+          "cache-control": "public, max-age=0, must-revalidate",
+          "content-disposition": "inline",
+          "content-length": "1814",
+          "content-type": "application/xml",
+          "date": "Wed, 30 Jul 2025 14:47:51 GMT",
+          "etag": "\"f889750ef13c80aa7bb9de2738bde5c5\"",
+          "server": "Vercel",
+          "strict-transport-security": "max-age=63072000",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch",
+          "x-matched-path": "/sitemap.xml",
+          "x-vercel-cache": "HIT",
+          "x-vercel-id": "arn1::5vq5t-1753886871901-75e8e13628d3"
+        }
+      },
+      {
+        "url": "https://www.fastingclock.com/robots.txt",
+        "status": 200,
+        "success": true,
+        "headers": {
+          "accept-ranges": "bytes",
+          "access-control-allow-origin": "*",
+          "age": "168",
+          "cache-control": "public, max-age=0, must-revalidate",
+          "content-disposition": "inline; filename=\"robots.txt\"",
+          "content-length": "74",
+          "content-type": "text/plain; charset=utf-8",
+          "date": "Wed, 30 Jul 2025 14:47:51 GMT",
+          "etag": "\"2852ff205d31876e3ecb22ab64fa6f79\"",
+          "last-modified": "Wed, 30 Jul 2025 14:45:03 GMT",
+          "server": "Vercel",
+          "strict-transport-security": "max-age=63072000",
+          "x-matched-path": "/robots.txt",
+          "x-vercel-cache": "HIT",
+          "x-vercel-id": "arn1::frrgq-1753886871972-27bebdc6373f"
+        }
+      }
+    ],
+    "httpsRedirect": false,
+    "wwwRedirect": false,
+    "metaTags": [
+      {
+        "name": "Title tag",
+        "status": "pass",
+        "content": "Free Fasting Timer &amp; Clock | FastingClock.com"
+      },
+      {
+        "name": "Meta description",
+        "status": "pass",
+        "content": "width=device-width, initial-scale=1"
+      },
+      {
+        "name": "Canonical URL",
+        "status": "pass"
+      },
+      {
+        "name": "Open Graph title",
+        "status": "pass"
+      },
+      {
+        "name": "Open Graph description",
+        "status": "pass"
+      },
+      {
+        "name": "Viewport meta",
+        "status": "pass"
+      }
+    ],
+    "structuredData": true,
+    "pageSpeed": {
+      "loadTime": 20,
+      "compressed": false
+    }
+  }
+}
