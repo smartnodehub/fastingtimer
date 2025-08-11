@@ -22,6 +22,11 @@ const TimerForm: FC = () => {
   const [isCountdownActive, setIsCountdownActive] = useState<boolean>(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Today's date string in local timezone (YYYY-MM-DD)
+  const maxDate = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+    .toISOString()
+    .split("T")[0];
+
   // Cleanup interval on component unmount
   useEffect(() => {
     return () => {
@@ -175,7 +180,7 @@ const TimerForm: FC = () => {
             value={date} 
             onChange={e => setDate(e.target.value)}
             placeholder="Select date"
-            max={new Date().toISOString().split('T')[0]} // Don't allow future dates
+            max={maxDate} // Don't allow future dates
           />
         </div>
         <div className="flex flex-col">
