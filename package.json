@@ -13,7 +13,8 @@
     "lighthouse": "node lighthouse-local.js",
     "lighthouse:ci": "lhci autorun",
     "lighthouse:setup": "node setup-lighthouse-ci.js",
-    "performance": "npm run lighthouse"
+    "performance": "npm run lighthouse",
+    "test": "node test-calculation.js"
   },
   "dependencies": {
     "@sentry/nextjs": "^9.43.0",
